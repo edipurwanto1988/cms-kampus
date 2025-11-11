@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LanguageSeeder::class,
             RolePermissionSeeder::class,
+            SettingsSeeder::class,
         ]);
 
         // Create admin user for testing

@@ -15,8 +15,7 @@ return new class extends Migration
             $table->bigInteger('id')->primary();
             $table->string('name');
             $table->string('position')->nullable()->default('header');
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

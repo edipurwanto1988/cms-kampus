@@ -15,9 +15,18 @@ class Language extends Model
         'is_default',
     ];
 
+    protected $primaryKey = 'code';   // ✅ Use 'code' as primary key
+    public $incrementing = false;     // ✅ Because 'code' is not an integer
+    protected $keyType = 'string';    // ✅ Ensure Eloquent treats it as a string
+
     protected $casts = [
         'is_default' => 'boolean',
     ];
+
+    public function getRouteKeyName()
+{
+    return 'code';
+}
 
     /**
      * Get the default language.

@@ -1,4 +1,3 @@
-esources/views/auth/login.blade.php</path>
 <content<!DOCTYPE html>
 <html lang="en">
 <head>

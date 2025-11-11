@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('path');
             $table->string('alt_text')->nullable();
             $table->string('mime_type')->nullable();
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
         });
     }
 

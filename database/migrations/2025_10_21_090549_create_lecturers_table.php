@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lecturers', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
+            $table->bigIncrements('id');
             $table->string('NUPTK')->nullable();
             $table->string('nip')->nullable();
             $table->string('email')->nullable();
@@ -26,8 +26,7 @@ return new class extends Migration
             $table->string('linkedin_url')->nullable();
             $table->boolean('featured')->default('0');
             $table->boolean('is_active')->default('1');
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
             $table->index(['photo_media_id']);
         });
     }

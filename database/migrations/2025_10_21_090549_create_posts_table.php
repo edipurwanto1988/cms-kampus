@@ -11,20 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->bigInteger('id')->primary();
-            $table->bigInteger('category_id')->nullable();
-            $table->bigInteger('cover_media_id')->nullable();
-            $table->dateTime('published_at')->nullable();
-            $table->boolean('is_pinned')->default('0');
-            $table->boolean('is_active')->default('1');
-            $table->bigInteger('created_by')->nullable();
-            $table->bigInteger('updated_by')->nullable();
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->index(['category_id']);
-            $table->index(['cover_media_id']);
-        });
+        if (!Schema::hasTable('posts')) {
+            Schema::create('posts', function (Blueprint $table) {
+                $table->bigInteger('id')->primary();
+                $table->bigInteger('category_id')->nullable();
+                $table->bigInteger('cover_media_id')->nullable();
+                $table->dateTime('published_at')->nullable();
+                $table->boolean('is_pinned')->default('0');
+                $table->boolean('is_active')->default('1');
+                $table->bigInteger('created_by')->nullable();
+                $table->bigInteger('updated_by')->nullable();
+                $table->timestamps();
+                $table->index(['category_id']);
+                $table->index(['cover_media_id']);
+            });
+        }
     }
 
     /**

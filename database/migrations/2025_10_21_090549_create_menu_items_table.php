@@ -20,8 +20,7 @@ return new class extends Migration
             $table->string('url_external')->nullable();
             $table->integer('sort_order')->default('0');
             $table->boolean('is_active')->default('1');
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
             $table->index(['menu_id']);
             $table->index(['parent_id']);
         });

@@ -23,8 +23,7 @@ return new class extends Migration
             $table->string('mt_confidence')->nullable();
             $table->boolean('human_reviewed')->default('0');
             $table->dateTime('translated_at')->nullable();
-            $table->timestamp('created_at')->nullable()->default('CURRENT_TIMESTAMP');
-            $table->timestamp('updated_at')->nullable()->default('CURRENT_TIMESTAMP');
+            $table->timestamps();
             $table->unique(['menu_item_id']);
             $table->unique(['locale']);
         });

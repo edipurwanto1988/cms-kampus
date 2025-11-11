@@ -1,10 +1,29 @@
+@php
+    // Load settings for the layout
+    $generalSettings = App\Models\Setting::with(['values' => function ($query) {
+        $query->whereNull('locale')->latest();
+    }])->where('group_name', 'general')->get()->keyBy('key_name');
+    
+    $seoSettings = App\Models\Setting::with(['values' => function ($query) {
+        $query->whereNull('locale')->latest();
+    }])->where('group_name', 'seo')->get()->keyBy('key_name');
+    
+    function getLayoutSettingValue($settings, $key, $default = '') {
+        return $settings->has($key) ? $settings[$key]->values->first()->value_text ?? $default : $default;
+    }
+@endphp
+
 <!DOCTYPE html>
 <html lang="en" x-data="{ sidebarOpen: false }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CMS Kampus') - Admin Panel</title>
+    <title>@yield('title', getLayoutSettingValue($seoSettings, 'site_meta_title', 'CMS Kampus')) - Admin Panel</title>
+    
+    @if(getLayoutSettingValue($seoSettings, 'site_meta_description'))
+    <meta name="description" content="{{ getLayoutSettingValue($seoSettings, 'site_meta_description') }}">
+    @endif
     
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css'])
@@ -31,7 +50,7 @@
             <div class="flex items-center justify-between h-16 px-6 border-b border-gray-200">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <h1 class="text-xl font-bold text-gray-900">CMS Kampus</h1>
+                        <h1 class="text-xl font-bold text-gray-900">{{ getLayoutSettingValue($generalSettings, 'site_name', 'CMS Kampus') }}</h1>
                     </div>
                 </div>
                 <button @click="sidebarOpen = false" class="lg:hidden text-gray-500 hover:text-gray-700">
@@ -82,17 +101,17 @@
                     </button>
                     
                     <div x-show="open" x-transition class="mt-2 space-y-1">
-                        <a href="{{ route('pages.index') }}" class="sidebar-link pl-12 text-sm {{ request()->routeIs('pages*') ? 'active' : '' }}">
-                            Pages
-                        </a>
-                        <a href="#" class="sidebar-link pl-12 text-sm">
+                        
+                        
+                        <a href="{{ route('posts.index') }}" class="sidebar-link pl-12 text-sm">
                             Posts
                         </a>
-                        <a href="#" class="sidebar-link pl-12 text-sm">
+                        <a href="{{ route('categories.index') }}" class="sidebar-link pl-12 text-sm">
                             Categories
                         </a>
-                        <a href="#" class="sidebar-link pl-12 text-sm">
-                            Media
+                        
+                        <a href="{{ route('lecturers.index') }}" class="sidebar-link pl-12 text-sm {{ request()->routeIs('lecturers*') ? 'active' : '' }}">
+                            Lecturers
                         </a>
                     </div>
                 </div>
@@ -108,14 +127,11 @@
                     </button>
                     
                     <div x-show="open" x-transition class="mt-2 space-y-1">
-                        <a href="#" class="sidebar-link pl-12 text-sm">
-                            General
+                        <a href="{{ route('cms.index') }}" class="sidebar-link pl-12 text-sm {{ request()->routeIs('cms*') ? 'active' : '' }}">
+                            General Settings
                         </a>
-                        <a href="#" class="sidebar-link pl-12 text-sm">
+                        <a href="{{ route('languages.index') }}" class="sidebar-link pl-12 text-sm {{ request()->routeIs('languages*') ? 'active' : '' }}">
                             Languages
-                        </a>
-                        <a href="#" class="sidebar-link pl-12 text-sm">
-                            Menus
                         </a>
                     </div>
                 </div>
