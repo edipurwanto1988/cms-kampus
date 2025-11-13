@@ -102,11 +102,7 @@
     </div>
     <div class="hidden lg:flex flex-1 justify-end items-center gap-8">
         <div class="flex items-center gap-9">
-            <a class="text-is-charcoal text-sm font-medium leading-normal hover:text-is-teal transition-colors {{ request()->routeIs('guest.home*') ? 'text-is-teal' : '' }}" href="{{ route('guest.home.localized', app()->getLocale()) }}">{{ uiTrans('nav_home', 'Home') }}</a>
-            <a class="text-is-charcoal text-sm font-medium leading-normal hover:text-is-teal transition-colors {{ request()->routeIs('guest.articles*') ? 'text-is-teal' : '' }}" href="{{ route('guest.articles.localized', app()->getLocale()) }}">{{ uiTrans('nav_articles', 'Articles') }}</a>
-            <a class="text-is-charcoal text-sm font-medium leading-normal hover:text-is-teal transition-colors {{ request()->routeIs('guest.lecturers*') ? 'text-is-teal' : '' }}" href="{{ route('guest.lecturers.localized', app()->getLocale()) }}">{{ uiTrans('nav_faculty', 'Faculty') }}</a>
-            
-            <a class="text-is-charcoal text-sm font-medium leading-normal hover:text-is-teal transition-colors {{ request()->routeIs('guest.contact*') ? 'text-is-teal' : '' }}" href="{{ route('guest.contact.localized', app()->getLocale()) }}">{{ uiTrans('nav_contact', 'Contact') }}</a>
+            {!! renderGuestMenu('header', app()->getLocale()) !!}
         </div>
         <button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-is-teal hover:bg-is-teal/90 text-white text-sm font-bold leading-normal tracking-[0.015em] transition-transform duration-200 hover:scale-105">
             <span class="truncate">{{ uiTrans('btn_apply_now', 'Apply Now') }}</span>
@@ -201,10 +197,7 @@
             <div>
                 <h4 class="font-semibold tracking-wide uppercase">{{ uiTrans('footer_quick_links', 'Quick Links') }}</h4>
                 <ul class="mt-4 space-y-2 text-sm">
-                    <li><a class="text-slate-300 hover:text-white transition-colors" href="{{ route('guest.home.localized', app()->getLocale()) }}">{{ uiTrans('nav_home', 'Home') }}</a></li>
-                    <li><a class="text-slate-300 hover:text-white transition-colors" href="{{ route('guest.articles.localized', app()->getLocale()) }}">{{ uiTrans('nav_articles', 'Articles') }}</a></li>
-                    <li><a class="text-slate-300 hover:text-white transition-colors" href="{{ route('guest.lecturers.localized', app()->getLocale()) }}">{{ uiTrans('nav_faculty', 'Faculty') }}</a></li>
-                    <li><a class="text-slate-300 hover:text-white transition-colors" href="{{ route('guest.contact.localized', app()->getLocale()) }}">{{ uiTrans('nav_contact', 'Contact') }}</a></li>
+                    {!! renderGuestFooterMenu('footer', app()->getLocale()) !!}
                 </ul>
             </div>
             <div>

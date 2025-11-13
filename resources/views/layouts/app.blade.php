@@ -135,6 +135,23 @@
                         </a>
                     </div>
                 </div>
+                
+                <!-- Menu Management -->
+                <div x-data="{ open: false }">
+                    <button @click="open = !open" class="sidebar-link w-full justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-bars w-5 h-5 mr-3"></i>
+                            Menu Management
+                        </div>
+                        <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': open }"></i>
+                    </button>
+                    
+                    <div x-show="open" x-transition class="mt-2 space-y-1">
+                        <a href="{{ route('menus.index') }}" class="sidebar-link pl-12 text-sm {{ request()->routeIs('menus*') ? 'active' : '' }}">
+                            Menus
+                        </a>
+                    </div>
+                </div>
             </nav>
         </aside>
         

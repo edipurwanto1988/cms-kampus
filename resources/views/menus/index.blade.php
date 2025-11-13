@@ -61,10 +61,10 @@
                                 title="Edit Translations">
                             <i class="fas fa-language"></i>
                         </button>
-                        <a href="{{ route('menus.edit', $menu) }}" 
+                        <a href="{{ route('menus.edit', $menu) }}"
                            class="text-green-600 hover:text-green-800 px-2 py-1"
-                           title="Edit Menu Items">
-                            <i class="fas fa-sitemap"></i>
+                           title="Edit Menu">
+                            <i class="fas fa-edit"></i>
                         </a>
                         <button onclick="deleteMenu({{ $menu->id }})" 
                                 class="text-red-600 hover:text-red-800 px-2 py-1"
@@ -99,18 +99,41 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Menu Name</label>
-                        <input type="text" 
-                               id="menu-name" 
+                        <input type="text"
+                               name="name"
+                               id="menu-name"
                                required
                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                                placeholder="Enter menu name">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Location (Optional)</label>
-                        <input type="text" 
-                               id="menu-location" 
+                        <input type="text"
+                               name="location"
+                               id="menu-location"
                                class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                                placeholder="e.g., header, footer">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL (Optional)</label>
+                        <input type="text"
+                               name="url"
+                               id="menu-url"
+                               class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="e.g., /home, https://example.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Link Target</label>
+                        <select name="target" id="menu-target" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="_self">Same Window</option>
+                            <option value="_blank">New Window</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" name="is_active" id="menu-is-active" checked class="mr-2">
+                            <span class="text-sm font-medium text-gray-700">Active</span>
+                        </label>
                     </div>
                     
                     <!-- Translation Fields -->
@@ -237,8 +260,11 @@ async function handleAddMenu(event) {
     
     const formData = new FormData(event.target);
     const data = {
-        name: formData.get('menu-name'),
-        location: formData.get('menu-location'),
+        name: formData.get('name'),
+        location: formData.get('location'),
+        url: formData.get('url'),
+        target: formData.get('target'),
+        is_active: formData.get('is_active') === 'on',
         translations: {}
     };
     

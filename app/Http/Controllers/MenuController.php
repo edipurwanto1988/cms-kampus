@@ -23,14 +23,6 @@ class MenuController extends Controller
 
     public function edit(Menu $menu)
     {
-        // Load menu items with proper hierarchy
-        $menu->load(['items' => function ($q) {
-            $q->whereNull('parent_id')->orderBy('position');
-            $q->with(['children' => function ($childQ) {
-                $childQ->orderBy('position');
-            }]);
-        }]);
-
         // Get available items for left panel
         $pages = Page::with('translations')->get()->map(function ($page) {
             return [
@@ -91,6 +83,9 @@ class MenuController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string'],
             'location' => ['nullable', 'string'],
+            'url' => ['nullable', 'string'],
+            'target' => ['nullable', 'string', 'in:_self,_blank'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $maxPosition = Menu::max('position') ?? -1;
@@ -98,6 +93,9 @@ class MenuController extends Controller
         $menu = Menu::create([
             'name' => $data['name'],
             'location' => $data['location'] ?? null,
+            'url' => $data['url'] ?? null,
+            'target' => $data['target'] ?? '_self',
+            'is_active' => $data['is_active'] ?? true,
             'position' => $maxPosition + 1,
         ]);
 
@@ -117,116 +115,28 @@ class MenuController extends Controller
         return redirect()->route('menus.index')->with('success', 'Menu created');
     }
 
-    public function addItem(Request $request, Menu $menu)
+    public function update(Request $request, Menu $menu)
     {
         $data = $request->validate([
-            'type' => ['required', 'string', 'in:page,post,category,custom'],
-            'title' => ['required', 'string'],
-            'url' => ['required', 'string'],
-            'target' => ['nullable', 'string', 'in:_self,_blank'],
-        ]);
-
-        $maxPosition = MenuItem::where('menu_id', $menu->id)
-            ->whereNull('parent_id')
-            ->max('position') ?? -1;
-
-        $menuItem = MenuItem::create([
-            'menu_id' => $menu->id,
-            'parent_id' => null,
-            'title' => $data['title'],
-            'url' => $data['url'],
-            'target' => $data['target'] ?? '_self',
-            'position' => $maxPosition + 1,
-            'is_active' => true,
-        ]);
-
-        return response()->json([
-            'status' => 'ok',
-            'item' => [
-                'id' => $menuItem->id,
-                'title' => $menuItem->title,
-                'url' => $menuItem->url,
-                'target' => $menuItem->target,
-                'is_active' => $menuItem->is_active,
-            ]
-        ]);
-    }
-
-    public function updateItem(Request $request, Menu $menu, MenuItem $menuItem)
-    {
-        // Ensure the menu item belongs to this menu
-        if ($menuItem->menu_id !== $menu->id) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid menu item'], 403);
-        }
-
-        $data = $request->validate([
-            'title' => ['required', 'string'],
-            'url' => ['required', 'string'],
+            'name' => ['required', 'string'],
+            'location' => ['nullable', 'string'],
+            'url' => ['nullable', 'string'],
             'target' => ['nullable', 'string', 'in:_self,_blank'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $menuItem->update($data);
-
-        return response()->json(['status' => 'ok']);
-    }
-
-    public function deleteItem(Menu $menu, MenuItem $menuItem)
-    {
-        // Ensure the menu item belongs to this menu
-        if ($menuItem->menu_id !== $menu->id) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid menu item'], 403);
-        }
-
-        // Delete children first
-        MenuItem::where('parent_id', $menuItem->id)->delete();
-        
-        // Delete the item
-        $menuItem->delete();
-
-        return response()->json(['status' => 'ok']);
-    }
-
-    public function updateStructure(Request $request, Menu $menu)
-    {
-        $data = $request->validate([
-            'items' => ['required', 'array'],
+        $menu->update([
+            'name' => $data['name'],
+            'location' => $data['location'] ?? $menu->location,
+            'url' => $data['url'] ?? $menu->url,
+            'target' => $data['target'] ?? $menu->target,
+            'is_active' => $data['is_active'] ?? $menu->is_active,
         ]);
 
-        DB::transaction(function () use ($data, $menu) {
-            $this->updateMenuItems($data['items'], $menu->id, null, 0);
-        });
-
-        return response()->json(['status' => 'ok']);
+        return redirect()->route('menus.index')->with('success', 'Menu updated successfully');
     }
 
-    private function updateMenuItems(array $items, $menuId, $parentId, $position)
-    {
-        foreach ($items as $itemData) {
-            $item = MenuItem::where('id', $itemData['id'])
-                ->where('menu_id', $menuId)
-                ->first();
-
-            if ($item) {
-                $item->update([
-                    'parent_id' => $parentId,
-                    'position' => $position,
-                ]);
-
-                // Update children if they exist
-                if (isset($itemData['children']) && is_array($itemData['children']) && count($itemData['children']) > 0) {
-                    $this->updateMenuItems($itemData['children'], $menuId, $item->id, 0);
-                } else {
-                    // Remove any existing children that are no longer in the structure
-                    MenuItem::where('parent_id', $item->id)
-                        ->whereNotIn('id', collect($itemData['children'] ?? [])->pluck('id'))
-                        ->update(['parent_id' => null]);
-                }
-            }
-
-            $position++;
-        }
-    }
+    // Remove menu item related methods as we're using direct menu links
 
     public function updateOrder(Request $request)
     {
@@ -268,7 +178,7 @@ class MenuController extends Controller
 
     public function destroy(Menu $menu)
     {
-        // Delete menu items first
+        // Delete menu items first (if any exist)
         $menu->items()->delete();
         
         // Delete translations

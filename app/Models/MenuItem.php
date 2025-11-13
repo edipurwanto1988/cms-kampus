@@ -39,6 +39,45 @@ class MenuItem extends Model
     {
         return $this->hasMany(MenuItem::class, 'parent_id')->orderBy('position');
     }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(MenuItemTranslation::class);
+    }
+
+    /**
+     * Get the translated title for the current locale
+     */
+    public function getTranslatedTitle($locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+        
+        $translation = $this->translations()->where('locale', $locale)->first();
+        
+        if ($translation) {
+            return $translation->label;
+        }
+        
+        // Fallback to the default title
+        return $this->title;
+    }
+
+    /**
+     * Get the translated URL for the current locale
+     */
+    public function getTranslatedUrl($locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+        
+        $translation = $this->translations()->where('locale', $locale)->first();
+        
+        if ($translation && $translation->slug_override) {
+            return $translation->slug_override;
+        }
+        
+        // Fallback to the default URL
+        return $this->url;
+    }
 }
 
 

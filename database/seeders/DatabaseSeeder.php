@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             LanguageSeeder::class,
             RolePermissionSeeder::class,
             SettingsSeeder::class,
+            SimpleMenuSeeder::class,
         ]);
 
         // Create admin user for testing
